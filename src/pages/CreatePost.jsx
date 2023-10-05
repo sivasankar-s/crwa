@@ -19,6 +19,7 @@ export const CreatePost = () => {
   let name;
 
   let downloadURL=null;
+  let videoURL=null;
 
   const navigate = useNavigate();
 
@@ -82,12 +83,36 @@ export const CreatePost = () => {
           }
         }
 
+        if(videos){
+            const fileFolderRef = ref(storage, `images/${videos?.name}`)
+            try {
+              await uploadBytes(fileFolderRef, videos)
+              .then(async (snapshot) => {
+                  console.log('Video uploaded successfully:', snapshot);
+                  // Get the download URL after the upload is complete
+                  await getDownloadURL(fileFolderRef)
+                  .then((url) => {
+                      videoURL=url;
+                  console.log('Video URL:', videoURL);
+                  })
+                  .catch((error) => {
+                  console.error('Error getting video URL:', error);
+                   });
+                })
+                .catch((error) => {
+                  console.error('Error uploading video:', error);
+                });
+            } catch(err){
+              console.error(err);
+            }
+          }
+
     try {
         const postRef = await addDoc(collection(db, 'posts'), {
           title,
           description,
           image: downloadURL,
-          videos,
+          videos: videoURL,
           authorId: user.uid, 
           authorName: name,
           date: Timestamp.now(),

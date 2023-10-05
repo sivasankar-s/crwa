@@ -22,6 +22,14 @@ export const Post = ({post}) => {
           
         </div>
       )}
+      {post.videos && (
+        <div className="mb-2">
+          <video controls className="max-w-full">
+            <source src={post.videos} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      )}
     </div>
     )
 }
