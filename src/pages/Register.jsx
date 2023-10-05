@@ -43,6 +43,7 @@ export const Register= () => {
 
 
           console.log(auth?.currentUser?.email);
+          alert("Registered Successful")
           
         } catch (err) {
           console.error(err)

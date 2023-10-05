@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { auth, db, googleProvider } from "../config/firebase";
 import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect } from "firebase/auth";
 import { getDoc, doc, getDocs, collection, addDoc } from "firebase/firestore";
@@ -8,6 +8,8 @@ export const Login = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    const navigate = useNavigate();
 
     const loginButton = async () => {
         event.preventDefault();
@@ -36,6 +38,14 @@ export const Login = () => {
 
           console.log(name);
           console.log(phone);
+
+          // notification.success({
+          //   message: "Logged In Successfully"
+          // })
+          if(auth){
+            alert("Logged In Successful")
+            navigate('/home')
+          }
           
         } catch (err) {
           console.error(err)
@@ -43,6 +53,8 @@ export const Login = () => {
 
     }
 
+
+    ////////// Removed
     const onGoogleSignIn = async () => {
       try {
         const result = await signInWithRedirect(auth, googleProvider);
