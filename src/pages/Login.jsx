@@ -9,6 +9,9 @@ export const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+    let name;
+    let phone;
+
     const navigate = useNavigate();
 
     const loginButton = async () => {
@@ -23,8 +26,7 @@ export const Login = () => {
           const userRef = collection(db, "users");
           const docData = await getDocs(userRef);
 
-          let name;
-          let phone;
+          
 
           const filteredData = docData.docs.map((doc) => ({...doc.data(), id: doc.id}))
           console.log(filteredData)
