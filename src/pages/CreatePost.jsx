@@ -4,8 +4,14 @@ import { PhotographIcon, FilmIcon } from "@heroicons/react/outline";
 import { Tooltip } from "react-tippy"; 
 import "react-tippy/dist/tippy.css"; 
 import { addDoc, collection, Timestamp, getDocs, setDoc, doc } from 'firebase/firestore';
-import { auth, db, storage } from "../config/firebase";
+import { app, auth, db, storage } from "../config/firebase";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import axios from 'axios';
+// import twilio from 'twilio';
+// import TwilioSDK, { Twilio } from "twilio";
+
+
+
 
 
 export const CreatePost = () => {
@@ -14,6 +20,9 @@ export const CreatePost = () => {
   const [images, setImages] = useState(null);
   const [videos, setVideos] = useState(null);
   const [anonymous, setAnonymous] = useState(false);
+  const [location, setLocation] = useState('');
+  const [agreed, setAgreed] = useState(false);
+  
 
   const user = auth?.currentUser;
   let name;
@@ -25,6 +34,10 @@ export const CreatePost = () => {
 
   const handleToggleAnonymous = () => {
     setAnonymous(!anonymous);
+  };
+
+  const handleAgreementChange = () => {
+    setAgreed(!agreed);
   };
 
   const handleImageChange = (e) => {
@@ -39,6 +52,7 @@ export const CreatePost = () => {
     const file = e.target.files[0];
     setVideos(file);
   };
+
 
   const handleSubmit = async(e) => {
     e.preventDefault();
@@ -107,6 +121,9 @@ export const CreatePost = () => {
             }
           }
 
+          
+
+          if(agreed){
     try {
         const postRef = await addDoc(collection(db, 'posts'), {
           title,
@@ -116,29 +133,100 @@ export const CreatePost = () => {
           authorId: user.uid, 
           authorName: name,
           date: Timestamp.now(),
-          anonymous
+          anonymous,
+          location
         });
     
         // return postRef.id; // Return the ID of the newly created post
 
         const postId = postRef.id; // Get the ID of the newly created post
 
+        try {
+          const response =  axios.post('http://localhost:3000/send-sms', {
+            title,
+            location
+          });
+          // console.log(response.data.message);
+          console.log('after msg in createpost');
+        } catch (error) {
+          console.error('Failed to send SMS:', error.message);
+        }
+
+        
+        console.log('after try in create post')
+
+
+        // await messaging.send(msg)
+        //   .then((response) => {
+        //    // Response is a message ID string.
+        //       console.log('Successfully sent message:', response);
+        //   })
+        //   .catch((error) => {
+        //     console.log('Error sending message:', error);
+        //   });
+
+  
+        
+
+        
+
+        // const not = new Notification(title, {
+        //   body: `Happened in ${location}, see more`
+        // })
+
+          // messaging.onMessage((payload) => {
+          //   const { title, body } = payload.notification;
+          
+          //   // Display a notification using the Web Notifications API
+          //   new Notification(title, { body });
+          // });
+          
+
     // Update the post with the postId field
         // await setDoc(doc(db, 'posts', postId), { postId }, { merge: true });
+
+        // const message = {
+        //   notification: {
+        //     title,
+        //     body: 'A new post has been created!',
+        //   },
+        //   // You can add more data to the notification if needed.
+        // };
+        
+        // const registrationTokens = [''];
+        
+        // admin
+        //   .messaging()
+        //   .sendToDevice(registrationTokens, message)
+        //   .then((response) => {
+        //     console.log('Successfully sent notifications:', response.results);
+        //   })
+        //   .catch((error) => {
+        //     console.error('Error sending notifications:', error);
+        //   });
+        
 
         navigate('/home')
 
       } catch (error) {
         console.error('Error creating post:', error);
       }
+
+    } else {
+      alert('Please agree to the terms before posting.');
+    }
     
   };
+
+ 
+
+  
 
   return (
     <body className="bg-slate-900">
     <div className="flex justify-center items-center h-screen">
   <div className="relative bg-white rounded-lg p-6 shadow-md w-3/5 ">
-      <h1 className="text-2xl font-semibold mb-4">Create a Post</h1>
+      <h1 className="text-2xl font-semibold mb-4">Report a crime</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           {/* <label htmlFor="title" className="block text-gray-700">Title</label> */}
@@ -153,6 +241,20 @@ export const CreatePost = () => {
             required
           />
         </div>
+        <label className="block mb-2">
+        
+        <input
+            type="text"
+            id="location"
+            className="w-2/5 text-lg border-gray-300 rounded-md px-3 py-2 focus:outline-none"
+            value={location}
+            placeholder="Location"
+            
+            onChange={(e) => setLocation(e.target.value)}
+            required
+          />
+        
+      </label>
         <div className="mb-4">
           {/* <label htmlFor="description" className="block text-gray-700">Description</label> */}
           <textarea
@@ -202,12 +304,24 @@ export const CreatePost = () => {
       </div>
       <label className="text-gray-600 ml-2">Post Anonymously</label>
 
+      <label className="inline-flex items-center my-10">
+          <input
+            type="checkbox"
+            className="form-checkbox h-5 w-5 text-blue-600"
+            checked={agreed}
+            onChange={handleAgreementChange}
+          />
+          <span className="ml-2 text-gray-700">
+            I certify that the information I am posting is true, and I understand that I am punishable for false information.
+          </span>
+        </label>
+
         <button
           type="submit"
           onClick={handleSubmit}
           className="absolute right-4 bottom-4 bg-blue-500 mt-20 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
         >
-          Create Post
+          Submit
         </button>
       </form>
     </div>
