@@ -19,7 +19,7 @@ app.post('/send-sms', (req, res) => {
 
   phnNos.forEach(function(number){
     var message = client.messages.create({
-      body: `${title}, happened on ${location} visit website...`,
+      body: `${title}, happened on ${location} visit https://dynamic-youtiao-ea47d1.netlify.app/ ...`,
       from: '+12567332270',
       to: `+91${number}`
     })
