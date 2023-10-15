@@ -1,14 +1,17 @@
 const express = require('express');
+const serverless = require('serverless-http');
 const app = express();
 const port = 3000;
 const cors = require('cors'); // Choose an appropriate port
 
+const router = express.Router();
+
 // Parse JSON request bodies
-app.use(express.json());
+// app.use(express.json());
 app.use(cors());
 
 // Define an API endpoint to receive data from your React component
-app.post('/send-sms', (req, res) => {
+router.post('/send-sms', (req, res) => {
   // Access the data sent from your React component
   const { title, location, phnNos } = req.body;
 
@@ -26,6 +29,11 @@ app.post('/send-sms', (req, res) => {
     .then(message =>  console.log(message.status));
     // .done();
   });
+  router.get('/', (req, res)=>{
+    res.json({
+      'hello':'hi'
+    })
+  })
 
   // client.messages
   // .create({
@@ -37,25 +45,15 @@ app.post('/send-sms', (req, res) => {
 
 //   client.messages
 //     .create({
-//       body: message,
-//       from: 'YOUR_TWILIO_PHONE_NUMBER',
-//       to: to,
-//     })
-//     .then((message) => {
-//       console.log('SMS sent:', message.sid);
-//       res.json({ success: true, message: 'SMS sent successfully' });
-//     })
-//     .catch((error) => {
-//       console.error('Error sending SMS:', error);
-//       res.status(500).json({ success: false, error: 'SMS sending failed' });
-//     });
 });
 
 // Start the server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server is running on port ${port}`);
+// });
 
+app.use('/.netlify/functions/api', router);
+module.exports.handler = serverless(app);
 
 
 
