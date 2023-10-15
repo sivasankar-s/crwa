@@ -1,4 +1,4 @@
 [build]
   base = "public"
-  publish = "build"
+  publish = "dist"
   functions = "functions"
