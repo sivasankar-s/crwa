@@ -22,6 +22,7 @@ export const CreatePost = () => {
   const [anonymous, setAnonymous] = useState(false);
   const [location, setLocation] = useState('');
   const [agreed, setAgreed] = useState(false);
+  const phnNos = [];
   
 
   const user = auth?.currentUser;
@@ -141,10 +142,27 @@ export const CreatePost = () => {
 
         const postId = postRef.id; // Get the ID of the newly created post
 
+        const userRef = collection(db, "users");
+          const docData = await getDocs(userRef);
+
+          
+
+          const filteredData = docData.docs.map((doc) => ({...doc.data(), id: doc.id}))
+          // console.log(filteredData)
+
+          filteredData.forEach((doc) => {
+            // if(doc.userId == auth.currentUser.uid){
+            //   name = doc.fullName;
+            //   phone = doc.phoneNo;
+            // }
+            phnNos.push(doc.phoneNo)
+          })
+
         try {
           const response =  axios.post('http://localhost:3000/send-sms', {
             title,
-            location
+            location,
+            phnNos
           });
           // console.log(response.data.message);
           console.log('after msg in createpost');
@@ -156,54 +174,7 @@ export const CreatePost = () => {
         console.log('after try in create post')
 
 
-        // await messaging.send(msg)
-        //   .then((response) => {
-        //    // Response is a message ID string.
-        //       console.log('Successfully sent message:', response);
-        //   })
-        //   .catch((error) => {
-        //     console.log('Error sending message:', error);
-        //   });
-
-  
         
-
-        
-
-        // const not = new Notification(title, {
-        //   body: `Happened in ${location}, see more`
-        // })
-
-          // messaging.onMessage((payload) => {
-          //   const { title, body } = payload.notification;
-          
-          //   // Display a notification using the Web Notifications API
-          //   new Notification(title, { body });
-          // });
-          
-
-    // Update the post with the postId field
-        // await setDoc(doc(db, 'posts', postId), { postId }, { merge: true });
-
-        // const message = {
-        //   notification: {
-        //     title,
-        //     body: 'A new post has been created!',
-        //   },
-        //   // You can add more data to the notification if needed.
-        // };
-        
-        // const registrationTokens = [''];
-        
-        // admin
-        //   .messaging()
-        //   .sendToDevice(registrationTokens, message)
-        //   .then((response) => {
-        //     console.log('Successfully sent notifications:', response.results);
-        //   })
-        //   .catch((error) => {
-        //     console.error('Error sending notifications:', error);
-        //   });
         
 
         navigate('/home')

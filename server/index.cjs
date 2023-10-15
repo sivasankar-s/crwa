@@ -10,20 +10,30 @@ app.use(cors());
 // Define an API endpoint to receive data from your React component
 app.post('/send-sms', (req, res) => {
   // Access the data sent from your React component
-  const { title, location } = req.body;
+  const { title, location, phnNos } = req.body;
 
   // Use the Twilio library to send an SMS
   const accountSid = "AC4dee4863afba02e1b8f8365a22578ba2";
-  const authToken = "e03956bc34da094ccd9d55770a68ee44";
+  const authToken = "babb7878240937410826ddf3de25eb21";
   const client = require('twilio')(accountSid, authToken);
 
-  client.messages
-  .create({
-     body: `${title}, happened on ${location} visit website...`,
-     from: '+12567332270',
-     to: '+917812866727'
-   })
-  .then(message => console.log(message.sid));
+  phnNos.forEach(function(number){
+    var message = client.messages.create({
+      body: `${title}, happened on ${location} visit website...`,
+      from: '+12567332270',
+      to: `+91${number}`
+    })
+    .then(message =>  console.log(message.status));
+    // .done();
+  });
+
+  // client.messages
+  // .create({
+  //    body: `${title}, happened on ${location} visit website...`,
+  //    from: '+12567332270',
+  //    to: '+917812866727'
+  //  })
+  // .then(message => console.log(message.sid));
 
 //   client.messages
 //     .create({

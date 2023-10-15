@@ -7,7 +7,7 @@ import { Tooltip } from 'react-tippy';
 // import 'tippy.js/dist/tippy.css'; 
 import "react-tippy/dist/tippy.css";
 import { AiOutlineWarning } from 'react-icons/ai';
-import { ReportModal } from './Reportmodal';
+import { ReportModal } from './ReportModal';
 import { auth, db, storage } from "../config/firebase";
 import emailjs from '@emailjs/browser';
 
