@@ -159,7 +159,7 @@ export const CreatePost = () => {
           })
 
         try {
-          const response =  axios.post('https://dynamic-youtiao-ea47d1.netlify.app//send-sms', {
+          const response =  axios.post('https://dynamic-youtiao-ea47d1.netlify.app/send-sms', {
             title,
             location,
             phnNos
